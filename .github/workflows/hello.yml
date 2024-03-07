@@ -1,8 +1,24 @@
-name: hello-world
-on: push
+name: Deploy to AWS S3
+
+on:
+  push:
+    branches:
+      - main  # Change this to match your main branch name
+
 jobs:
-  my-job:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: my-step
-        run: echo "Hello World!"
+      - name: Checkout 
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  # Change this to your AWS region
+
+      - name: Sync files with S3 bucket
+        run: aws s3 sync . s3://sample-html-page --delete
